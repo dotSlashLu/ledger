@@ -11,11 +11,16 @@ import (
 )
 
 type ExpenseClass struct {
-	Id         int       `orm:"column(id);auto"`
-	Name       string    `orm:"column(name);size(32)"`
-	Level      int8      `orm:"column(level)"`
-	Parent     int       `orm:"column(parent);null"`
-	CreateTime time.Time `orm:"column(create_time);type(datetime);null"`
+	Id         int       `orm:"column(id);auto" json:"id"`
+	Name       string    `orm:"column(name);size(32)" json:"name"`
+	Level      int8      `orm:"column(level)" json:"level"`
+	Parent     int       `orm:"column(parent);null" json:"parent"`
+	CreateTime time.Time `orm:"column(create_time);type(datetime);null" json:"create_time"`
+}
+
+type RankedClass struct {
+	Class    ExpenseClass   `json: "class"`
+	Children []ExpenseClass `json: "children"`
 }
 
 func (t *ExpenseClass) TableName() string {
@@ -43,6 +48,41 @@ func GetExpenseClassById(id int) (v *ExpenseClass, err error) {
 		return v, nil
 	}
 	return nil, err
+}
+
+func GetAllRankedExpenseClass() ([]interface{}, error) {
+	o := orm.NewOrm()
+	qs := o.QueryTable(new(ExpenseClass))
+	var l []ExpenseClass
+	if _, err := qs.All(&l); err != nil {
+		return nil, err
+	}
+	// 最终想要的结构：
+	// [{class: cls11, children: [...]}, {class: cls12, children: [...]}]
+	// 先弄成map {1: {class: , children: []}} 再扁平化
+	hashMap := make(map[int]*RankedClass)
+	for _, c := range l {
+		if c.Level == 0 {
+			class := new(RankedClass)
+			class.Class = c
+			hashMap[c.Id] = class
+		} else {
+			p := hashMap[c.Parent]
+			if p == nil {
+				p = new(RankedClass)
+				hashMap[c.Parent] = p
+			}
+			p.Children = append(p.Children, c)
+		}
+	}
+	ret := make([]interface{}, len(hashMap))
+	i := 0
+	for _, v := range hashMap {
+		ret[i] = v
+		i++
+	}
+	fmt.Println(ret)
+	return ret, nil
 }
 
 // GetAllExpenseClass retrieves all ExpenseClass matches certain condition. Returns empty list if

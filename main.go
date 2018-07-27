@@ -8,10 +8,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// func init() {
-// 	orm.RegisterDataBase("default", "mysql", "root:379882002@tcp(172.17.140.95:3306)/ledger")
-// }
-
 func main() {
 	if beego.BConfig.RunMode == "dev" {
 		beego.BConfig.WebConfig.DirectoryIndex = true
