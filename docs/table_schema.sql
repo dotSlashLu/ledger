@@ -1,0 +1,18 @@
+CREATE TABLE `expense_class` (
+	`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`name` VARCHAR(32) NOT NULL,
+	`level` TINYINT NOT NULL DEFAULT 0,
+	`parent` INT DEFAULT NULL,
+	`create_time` DATETIME DEFAULT NULL
+) CHARSET=utf8;
+
+CREATE TABLE `expense` (
+	`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`cost` INT NOT NULL,
+	`class` INT DEFAULT NULL,
+	`sub_class` INT DEFAULT NULL,
+	`remark` VARCHAR(512) DEFAULT "",
+	`create_time` DATETIME DEFAULT NULL,
+
+	KEY `create time`(`create_time`)
+) CHARSET=utf8;

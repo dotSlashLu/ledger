@@ -1,0 +1,9 @@
+appname = ledger
+httpport = 8080
+runmode = dev
+autorender = false
+copyrequestbody = true
+EnableDocs = true
+
+[dev]
+mysql_uri = "root:passwd@tcp(localhost:3306)/ledger"

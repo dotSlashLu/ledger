@@ -1,0 +1,3 @@
+*.tmp
+*.exe*
+conf/app.conf
