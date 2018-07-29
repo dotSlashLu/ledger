@@ -6,6 +6,7 @@ import (
 	"github.com/dotSlashLu/ledger/models"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/astaxie/beego"
 )
@@ -33,6 +34,8 @@ func (c *ExpenseController) URLMapping() {
 // @router / [post]
 func (c *ExpenseController) Post() {
 	var v models.Expense
+	// add default value for create_time
+	v.CreateTime = time.Now()
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
 		if _, err := models.AddExpense(&v); err == nil {
 			c.Ctx.Output.SetStatus(201)

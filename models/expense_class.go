@@ -19,8 +19,8 @@ type ExpenseClass struct {
 }
 
 type RankedClass struct {
-	Class    ExpenseClass   `json: "class"`
-	Children []ExpenseClass `json: "children"`
+	Class    ExpenseClass   `json:"class"`
+	Children []ExpenseClass `json:"children"`
 }
 
 func (t *ExpenseClass) TableName() string {

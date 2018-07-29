@@ -6,8 +6,17 @@ CREATE TABLE `expense_class` (
 	`create_time` DATETIME DEFAULT NULL
 ) CHARSET=utf8;
 
+INSERT INTO `expense_class` VALUES 
+(1,'交通',0,NULL,'2018-07-27 15:40:32'),
+(2,'其它',0,NULL,'2018-07-27 15:40:47'),
+(3,'人情',0,NULL,'2018-07-27 15:41:24'),
+(4,'宠物',0,NULL,'2018-07-27 15:41:30'),
+(5,'公交',1,1,'2018-07-27 15:43:27'),
+(6,'打车',1,1,'2018-07-27 15:43:27');
+
 CREATE TABLE `expense` (
 	`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`title` VARCHAR(32) DEFAULT NULL,
 	`cost` INT NOT NULL,
 	`class` INT DEFAULT NULL,
 	`sub_class` INT DEFAULT NULL,

@@ -12,6 +12,7 @@ import (
 
 type Expense struct {
 	Id         int       `orm:"column(id);auto" json:"id"`
+	Title      string    `orm:"column(title)" json:"title"`
 	Cost       int       `orm:"column(cost)" json:"cost"`
 	Class      int       `orm:"column(class);null" json:"class"`
 	SubClass   int       `orm:"column(sub_class);null" json:"sub_class"`
