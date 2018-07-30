@@ -124,7 +124,12 @@ func (c *ExpenseController) GetAll() {
 
 	l, err := models.GetAllExpense(query, fields, sortby, order, offset, limit)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		if strings.Contains(err.Error(), "no row found") {
+			c.Data["json"] = []int{}
+		} else {
+			c.Data["json"] = err.Error()
+		}
+
 	} else {
 		c.Data["json"] = l
 	}
