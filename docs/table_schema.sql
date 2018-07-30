@@ -17,11 +17,13 @@ INSERT INTO `expense_class` VALUES
 CREATE TABLE `expense` (
 	`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`title` VARCHAR(32) DEFAULT NULL,
-	`cost` INT NOT NULL,
+	`cost` FLOAT(10,3) NOT NULL,
 	`class` INT DEFAULT NULL,
 	`sub_class` INT DEFAULT NULL,
 	`remark` VARCHAR(512) DEFAULT "",
 	`create_time` DATETIME DEFAULT NULL,
 
-	KEY `create time`(`create_time`)
+	KEY `create time`(`create_time`),
+	KEY `class`(`class`),
+	KEY `sub class`(`sub_class`)
 ) CHARSET=utf8;
