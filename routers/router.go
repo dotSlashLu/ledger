@@ -27,6 +27,11 @@ func init() {
 				&controllers.ExpenseClassController{},
 			),
 		),
+
+		beego.NSNamespace("/stat",
+			beego.NSGet("/class_group",
+				controllers.StatController{}.GetClassGroup),
+		),
 	)
 	beego.AddNamespace(ns)
 }
