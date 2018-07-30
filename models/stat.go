@@ -3,25 +3,39 @@ package models
 import (
 	"fmt"
 	"github.com/astaxie/beego/orm"
+	"strings"
 	"time"
 )
 
 type ClassGroup struct {
-	Count       int
-	RecordCount int
-	CostSum     float64
-	Class       int
+	Count       int     `json:"count"`
+	RecordCount int     `json:"record_count"`
+	CostSum     float64 `json:"cost"`
+	Class       int     `json:"class"`
 }
 
-func StatGroupByClass(from time.Time) (*[]ClassGroup, error) {
-	fromStr := from.Format("2006-01-02 15:04:05")
+const dbTimeLayout = "2006-01-02 15:04:05"
+
+func StatGroupByClass(from, to time.Time) (*[]ClassGroup, error) {
+	fromStr := from.Format(dbTimeLayout)
+	toStr := to.Format(dbTimeLayout)
 	o := orm.NewOrm()
-	where := ""
+
+	criteria := []string{}
 	if !from.IsZero() {
-		where += fmt.Sprintf(`
-			WHERE create_time >= "%s"
-		`, fromStr)
+		criteria = append(criteria,
+			fmt.Sprintf(`create_time >= "%s"`, fromStr))
 	}
+	if !to.IsZero() {
+		criteria = append(criteria,
+			fmt.Sprintf(`create_time < "%s"`, toStr))
+	}
+
+	where := ""
+	if len(criteria) > 0 {
+		where = "WHERE " + strings.Join(criteria, " AND ")
+	}
+
 	sql := fmt.Sprintf(`
 		SELECT class, 
 			COUNT(id) AS record_count, 
@@ -36,6 +50,5 @@ func StatGroupByClass(from time.Time) (*[]ClassGroup, error) {
 	if _, err := o.Raw(sql).QueryRows(&group); err != nil {
 		return nil, err
 	}
-	fmt.Printf("got group %+v\n", group)
 	return &group, nil
 }
