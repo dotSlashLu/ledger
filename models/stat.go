@@ -81,6 +81,9 @@ func StatOverview(from, to time.Time) (*OverviewStat, error) {
 		where = "WHERE " + strings.Join(criteria, " AND ")
 	}
 
+	// TODO
+	// sum should not be devided by count of distinct days
+	// days with no records should also be counted
 	sql := fmt.Sprintf(`
 		SELECT 
 			SUM(cost) / COUNT(DISTINCT DATE(create_time)) AS cost_daily_avg,

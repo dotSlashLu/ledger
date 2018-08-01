@@ -84,8 +84,9 @@ func (c *ExpenseController) GetAll() {
 	var fields []string
 	var sortby []string
 	var order []string
-	var query = make(map[string]string)
-	var limit int64 = 10
+	// var query = make(map[string]string)
+	query := []models.OpQuery{}
+	var limit int64 = 100
 	var offset int64
 
 	// fields: col1,col2,entity.col3
@@ -108,21 +109,33 @@ func (c *ExpenseController) GetAll() {
 	if v := c.GetString("order"); v != "" {
 		order = strings.Split(v, ",")
 	}
-	// query: k:v,k:v
+	// query: k:op:v,k:op:v
+	// if v := c.GetString("query"); v != "" {
+	// for _, cond := range strings.Split(v, ",") {
+	// 	kv := strings.SplitN(cond, ":", 2)
+	// 	if len(kv) != 2 {
+	// 		c.Data["json"] = errors.New("Error: invalid query key/value pair")
+	// 		c.ServeJSON()
+	// 		return
+	// 	}
+	// 	k, v := kv[0], kv[1]
+	// 	query[k] = v
+	// }
+	// }
 	if v := c.GetString("query"); v != "" {
 		for _, cond := range strings.Split(v, ",") {
-			kv := strings.SplitN(cond, ":", 2)
-			if len(kv) != 2 {
+			l := strings.SplitN(cond, ":", 3)
+			if len(l) != 3 {
 				c.Data["json"] = errors.New("Error: invalid query key/value pair")
 				c.ServeJSON()
 				return
 			}
-			k, v := kv[0], kv[1]
-			query[k] = v
+			q := models.OpQuery{l[0], l[2], l[1]}
+			query = append(query, q)
 		}
 	}
 
-	l, err := models.GetAllExpense(query, fields, sortby, order, offset, limit)
+	l, err := models.GetAllExpense1(query, fields, sortby, order, offset, limit)
 	if err != nil {
 		if strings.Contains(err.Error(), "no row found") {
 			c.Data["json"] = []int{}
