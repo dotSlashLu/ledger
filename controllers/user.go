@@ -21,6 +21,7 @@ func (this UserController) Status(ctx *context.Context) {
 		ret.Login = true
 	}
 
+	ctx.Output.SetStatus(200)
 	ctx.Output.JSON(ret, true, false)
 }
 
@@ -41,7 +42,11 @@ func (this UserController) Login(ctx *context.Context) {
 		defer sess.SessionRelease(ctx.ResponseWriter)
 		sess.Set("uid", uid)
 		sess.Set("username", v.Username)
+		ctx.Output.JSON(struct {
+			Status string `json:"status"`
+		}{"ok"}, true, false)
 	}
+
 }
 
 func (this UserController) Auth(ctx *context.Context) bool {

@@ -4,6 +4,7 @@ runmode = dev
 autorender = false
 copyrequestbody = true
 EnableDocs = true
+sessionon = true
 
 [dev]
 mysql_uri = "root:passwd@tcp(localhost:3306)/ledger"
