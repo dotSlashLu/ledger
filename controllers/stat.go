@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 	"github.com/dotSlashLu/ledger/models"
 	"time"
@@ -8,7 +9,9 @@ import (
 
 const ISOLayout = "2006-01-02T15:04:05Z0700"
 
-type StatController struct{}
+type StatController struct {
+	beego.Controller
+}
 
 type errReturn struct {
 	Status  string
@@ -82,7 +85,11 @@ func (this StatController) Overview(ctx *context.Context) {
 }
 
 func (this StatController) MonthGroup(ctx *context.Context) {
-	group, err := models.StatGroupByMonth()
+	ok, from, to := parseRange(ctx)
+	if !ok {
+		return
+	}
+	group, err := models.StatGroupByMonth(from, to)
 	if err != nil {
 		returnError(ctx, err)
 		return

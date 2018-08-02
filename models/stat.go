@@ -101,10 +101,10 @@ func StatOverview(from, to time.Time) (*OverviewStat, error) {
 	return stat, nil
 }
 
-func StatGroupByMonth() (*[]MonthGroupStat, error) {
+func StatGroupByMonth(from, to time.Time) (*[]MonthGroupStat, error) {
 	o := orm.NewOrm()
 	criteria := []string{}
-
+	timeRangeCriteria(&criteria, from, to)
 	where := ""
 	if len(criteria) > 0 {
 		where = "WHERE " + strings.Join(criteria, " AND ")

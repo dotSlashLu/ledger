@@ -7,6 +7,7 @@ import (
 )
 
 var statNS = beego.NSNamespace("/stat",
+	beego.NSCond(controllers.UserController{}.Auth),
 	beego.NSGet("/class_group",
 		controllers.StatController{}.ClassGroup),
 	beego.NSGet("/overview",
