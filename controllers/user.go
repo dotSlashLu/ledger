@@ -46,7 +46,13 @@ func (this UserController) Login(ctx *context.Context) {
 			Status string `json:"status"`
 		}{"ok"}, true, false)
 	}
+}
 
+func (this UserController) Logout(ctx *context.Context) {
+	sess, _ := beego.GlobalSessions.SessionStart(ctx.ResponseWriter, ctx.Request)
+	defer sess.SessionRelease(ctx.ResponseWriter)
+
+	sess.Delete("uid")
 }
 
 func (this UserController) Auth(ctx *context.Context) bool {
@@ -57,6 +63,7 @@ func (this UserController) Auth(ctx *context.Context) bool {
 	defer sess.SessionRelease(ctx.ResponseWriter)
 	uid := sess.Get("uid")
 	if uid != nil {
+		ctx.Input.SetData("uid", uid)
 		return true
 	}
 	return false

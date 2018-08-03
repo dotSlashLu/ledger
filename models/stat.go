@@ -42,10 +42,10 @@ func timeRangeCriteria(criteria *[]string, from, to time.Time) {
 	}
 }
 
-func StatGroupByClass(from, to time.Time) (*[]ClassGroupStat, error) {
+func StatGroupByClass(uid int, from, to time.Time) (*[]ClassGroupStat, error) {
 	o := orm.NewOrm()
 
-	criteria := []string{}
+	criteria := []string{fmt.Sprintf(`uid = "%d"`, uid)}
 	timeRangeCriteria(&criteria, from, to)
 
 	where := ""
@@ -70,10 +70,10 @@ func StatGroupByClass(from, to time.Time) (*[]ClassGroupStat, error) {
 	return &group, nil
 }
 
-func StatOverview(from, to time.Time) (*OverviewStat, error) {
+func StatOverview(uid int, from, to time.Time) (*OverviewStat, error) {
 	o := orm.NewOrm()
 
-	criteria := []string{}
+	criteria := []string{fmt.Sprintf(`uid = "%d"`, uid)}
 	timeRangeCriteria(&criteria, from, to)
 
 	where := ""
@@ -101,9 +101,9 @@ func StatOverview(from, to time.Time) (*OverviewStat, error) {
 	return stat, nil
 }
 
-func StatGroupByMonth(from, to time.Time) (*[]MonthGroupStat, error) {
+func StatGroupByMonth(uid int, from, to time.Time) (*[]MonthGroupStat, error) {
 	o := orm.NewOrm()
-	criteria := []string{}
+	criteria := []string{fmt.Sprintf(`uid = "%d"`, uid)}
 	timeRangeCriteria(&criteria, from, to)
 	where := ""
 	if len(criteria) > 0 {

@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/dotSlashLu/ledger/models"
 	"strconv"
 	"strings"
@@ -34,8 +35,10 @@ func (c *ExpenseController) URLMapping() {
 // @router / [post]
 func (c *ExpenseController) Post() {
 	var v models.Expense
+	uid := c.Ctx.Input.GetData("uid").(int)
 	// add default value for create_time
 	v.CreateTime = time.Now()
+	v.Uid = uid
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
 		if _, err := models.AddExpense(&v); err == nil {
 			c.Ctx.Output.SetStatus(201)
@@ -57,9 +60,10 @@ func (c *ExpenseController) Post() {
 // @Failure 403 :id is empty
 // @router /:id [get]
 func (c *ExpenseController) GetOne() {
+	uid := c.Ctx.Input.GetData("uid").(int)
 	idStr := c.Ctx.Input.Param(":id")
 	id, _ := strconv.Atoi(idStr)
-	v, err := models.GetExpenseById(id)
+	v, err := models.GetExpenseById(uid, id)
 	if err != nil {
 		c.Data["json"] = err.Error()
 	} else {
@@ -81,6 +85,8 @@ func (c *ExpenseController) GetOne() {
 // @Failure 403
 // @router / [get]
 func (c *ExpenseController) GetAll() {
+	uid := c.Ctx.Input.GetData("uid").(int)
+	fmt.Println("getall for uid", uid)
 	var fields []string
 	var sortby []string
 	var order []string
@@ -135,7 +141,8 @@ func (c *ExpenseController) GetAll() {
 		}
 	}
 
-	l, err := models.GetAllExpense1(query, fields, sortby, order, offset, limit)
+	l, err := models.GetAllExpense1(uid, query, fields, sortby, order, offset,
+		limit)
 	if err != nil {
 		if strings.Contains(err.Error(), "no row found") {
 			c.Data["json"] = []int{}

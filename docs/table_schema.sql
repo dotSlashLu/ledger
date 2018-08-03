@@ -30,10 +30,12 @@ CREATE TABLE `expense` (
 	`sub_class` INT DEFAULT NULL,
 	`remark` VARCHAR(512) DEFAULT "",
 	`create_time` DATETIME DEFAULT NULL,
+	`uid` INT NOT NULL,
 
 	KEY `create time`(`create_time`),
 	KEY `class`(`class`),
-	KEY `sub class`(`sub_class`)
+	KEY `sub class`(`sub_class`),
+	KEY `by user`(`uid`)
 ) CHARSET=utf8;
 
 CREATE TABLE `user` (

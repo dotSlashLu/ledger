@@ -58,7 +58,7 @@ func (this StatController) ClassGroup(ctx *context.Context) {
 		return
 	}
 
-	groups, err := models.StatGroupByClass(from, to)
+	groups, err := models.StatGroupByClass(ctx.Input.GetData("uid").(int), from, to)
 	if err != nil {
 		returnError(ctx, err)
 		return
@@ -74,7 +74,7 @@ func (this StatController) Overview(ctx *context.Context) {
 		return
 	}
 
-	overview, err := models.StatOverview(from, to)
+	overview, err := models.StatOverview(ctx.Input.GetData("uid").(int), from, to)
 	if err != nil {
 		returnError(ctx, err)
 		return
@@ -89,7 +89,7 @@ func (this StatController) MonthGroup(ctx *context.Context) {
 	if !ok {
 		return
 	}
-	group, err := models.StatGroupByMonth(from, to)
+	group, err := models.StatGroupByMonth(ctx.Input.GetData("uid").(int), from, to)
 	if err != nil {
 		returnError(ctx, err)
 		return

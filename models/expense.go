@@ -18,6 +18,7 @@ type Expense struct {
 	SubClass   int       `orm:"column(sub_class);null" json:"sub_class"`
 	CreateTime time.Time `orm:"column(create_time);type(datetime);null" json:"create_time"`
 	Remark     string    `orm:"column(remark);size(512);null" json:"remark"`
+	Uid        int       `orm:"column(uid)" json:"uid"`
 }
 
 // ?query=k:op:v
@@ -60,9 +61,9 @@ func AddExpense(m *Expense) (id int64, err error) {
 
 // GetExpenseById retrieves Expense by Id. Returns error if
 // Id doesn't exist
-func GetExpenseById(id int) (v *Expense, err error) {
+func GetExpenseById(uid, id int) (v *Expense, err error) {
 	o := orm.NewOrm()
-	v = &Expense{Id: id}
+	v = &Expense{Id: id, Uid: uid}
 	if err = o.Read(v); err == nil {
 		return v, nil
 	}
@@ -71,7 +72,7 @@ func GetExpenseById(id int) (v *Expense, err error) {
 
 // GetAllExpense retrieves all Expense matches certain condition. Returns empty list if
 // no records exist
-func GetAllExpense1(query []OpQuery, fields []string, sortby []string, order []string,
+func GetAllExpense1(uid int, query []OpQuery, fields []string, sortby []string, order []string,
 	offset int64, limit int64) (ml []interface{}, err error) {
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Expense))
@@ -79,14 +80,17 @@ func GetAllExpense1(query []OpQuery, fields []string, sortby []string, order []s
 	for _, q := range query {
 		// rewrite dot-notation to Object__Attribute
 		k := strings.Replace(q.K, ".", "__", -1)
-		fmt.Println(k, q.V)
+		// fmt.Println(k, q.V)
 		k += op2Suffix(q.Op)
 		if strings.Contains(k, "isnull") {
 			qs = qs.Filter(k, (q.V == "true" || q.V == "1"))
 		} else {
 			qs = qs.Filter(k, q.V)
 		}
+		// fmt.Println(k)
 	}
+	// restrict user to current
+	qs = qs.Filter("uid", uid)
 	// order by:
 	var sortFields []string
 	if len(sortby) != 0 {
