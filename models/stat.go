@@ -22,6 +22,7 @@ type ClassGroupStat struct {
 type OverviewStat struct {
 	CostDailyAvg float64 `json:"cost_daily_avg"`
 	CostSum      float64 `json:"cost_sum"`
+	TodaySum     float64 `json:"today_sum"`
 }
 
 type MonthGroupStat struct {
@@ -54,9 +55,9 @@ func StatGroupByClass(uid int, from, to time.Time) (*[]ClassGroupStat, error) {
 	}
 
 	sql := fmt.Sprintf(`
-		SELECT class, 
-			COUNT(id) AS record_count, 
-			SUM(cost) AS cost_sum 
+		SELECT class,
+			COUNT(id) AS record_count,
+			SUM(cost) AS cost_sum
 		FROM %s
 		%s
 		GROUP BY class
@@ -81,16 +82,16 @@ func StatOverview(uid int, from, to time.Time) (*OverviewStat, error) {
 		where = "WHERE " + strings.Join(criteria, " AND ")
 	}
 
-	// TODO
-	// sum should not be devided by count of distinct days
-	// days with no records should also be counted
 	sql := fmt.Sprintf(`
-		SELECT 
-			SUM(cost) / COUNT(DISTINCT DATE(create_time)) AS cost_daily_avg,
-			SUM(cost) AS cost_sum
+		SELECT
+			SUM(cost) / DATEDIFF(MAX(create_time), MIN(create_time)) AS cost_daily_avg,
+			SUM(cost) AS cost_sum,
+			(SELECT SUM(cost) FROM %s WHERE
+				create_time >= concat(curdate(), " 00:00:00") AND
+				create_time <= concat(curdate(), " 23:59:59")) AS today_sum
 		FROM %s
 		%s
-	`, costDB, where)
+	`, costDB, costDB, where)
 	fmt.Printf("exec sql %s\n", sql)
 
 	stat := new(OverviewStat)
@@ -111,7 +112,7 @@ func StatGroupByMonth(uid int, from, to time.Time) (*[]MonthGroupStat, error) {
 	}
 
 	sql := fmt.Sprintf(`
-		SELECT 
+		SELECT
 			SUM(cost) AS cost_sum,
 			MONTH(create_time) AS month
 		FROM %s
