@@ -84,11 +84,11 @@ func StatOverview(uid int, from, to time.Time) (*OverviewStat, error) {
 
 	sql := fmt.Sprintf(`
 		SELECT
-			SUM(cost) / DATEDIFF(MAX(create_time), MIN(create_time)) AS cost_daily_avg,
+			SUM(cost) / DATEDIFF(CURDATE(), MIN(create_time)) AS cost_daily_avg,
 			SUM(cost) AS cost_sum,
 			(SELECT SUM(cost) FROM %s WHERE
-				create_time >= concat(curdate(), " 00:00:00") AND
-				create_time <= concat(curdate(), " 23:59:59")) AS today_sum
+				create_time >= concat(CURDATE(), " 00:00:00") AND
+				create_time <= concat(CURDATE(), " 23:59:59")) AS today_sum
 		FROM %s
 		%s
 	`, costDB, costDB, where)
