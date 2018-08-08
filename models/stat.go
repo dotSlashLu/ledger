@@ -88,10 +88,11 @@ func StatOverview(uid int, from, to time.Time) (*OverviewStat, error) {
 			SUM(cost) AS cost_sum,
 			(SELECT SUM(cost) FROM %s WHERE
 				create_time >= concat(CURDATE(), " 00:00:00") AND
-				create_time <= concat(CURDATE(), " 23:59:59")) AS today_sum
+				create_time <= concat(CURDATE(), " 23:59:59") AND
+				uid = "%d") AS today_sum
 		FROM %s
 		%s
-	`, costDB, costDB, where)
+	`, costDB, uid, costDB, where)
 	fmt.Printf("exec sql %s\n", sql)
 
 	stat := new(OverviewStat)
