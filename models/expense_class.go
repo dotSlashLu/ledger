@@ -63,9 +63,13 @@ func GetAllRankedExpenseClass() ([]interface{}, error) {
 	hashMap := make(map[int]*RankedClass)
 	for _, c := range l {
 		if c.Level == 0 {
-			class := new(RankedClass)
-			class.Class = c
-			hashMap[c.Id] = class
+			if hashMap[c.Id] == nil {
+				class := new(RankedClass)
+				class.Class = c
+				hashMap[c.Id] = class
+			} else {
+				hashMap[c.Id].Class = c
+			}
 		} else {
 			p := hashMap[c.Parent]
 			if p == nil {
